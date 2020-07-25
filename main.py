@@ -16,24 +16,21 @@ def main():
 
 
 def download_video(download_url):
-    video = None
     start_time = time.time()
 
     # noinspection PyBroadException
     try:
         video = pafy.new(download_url)
-    finally:
-        if video is not None:
-            print(f"'{video.title}'. Length: {video.duration}.")
-            print("Downloading started")
+        print(f"'{video.title}'. Length: {video.duration}.")
+        print("Downloading started")
 
-            best_audio = video.getbestaudio()
-            best_audio.download(filepath=f"/{os.getcwd()}/{video.title}.mp3")
+        best_audio = video.getbestaudio()
+        best_audio.download(filepath=f"/{os.getcwd()}/{video.title}.mp3")
 
-            print("--- %s seconds ---" % (time.time() - start_time))
-            print(f"'{video.title}' downloaded")
-        else:
-            print("Error occurred.")
+        print("--- %s seconds ---" % (time.time() - start_time))
+        print(f"'{video.title}' downloaded")
+    except Exception:
+        print("Error occurred.")
 
 
 def check_youtube_link(link):
