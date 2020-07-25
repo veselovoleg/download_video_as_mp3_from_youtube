@@ -6,10 +6,33 @@ from tkinter import *
 from tkinter.filedialog import *
 from tkinter.messagebox import *
 
+# TODO add info from terminal to tkinter, add path to save, block (?) and clear textfield
+
+
+def check_youtube_link(link):
+    pattern = re.compile("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$")
+    return pattern.match(link)
+
+
+def download_video(download_url):
+    start_time = time.time()
+
+    # noinspection PyBroadException
+    try:
+        video = pafy.new(download_url)
+        print(f"'{video.title}'. Length: {video.duration}.")
+        print("Downloading started")
+
+        best_audio = video.getbestaudio()
+        best_audio.download(filepath=f"/{os.getcwd()}/{video.title}.mp3")
+
+        print("--- %s seconds ---" % (time.time() - start_time))
+        print(f"'{video.title}' downloaded")
+    except Exception:
+        print("Error occurred.")
+
 
 def get_inserted_links():
-    #https://www.youtube.com/watch?v=PWt27h_scaYhttps://www.youtube.com/watch?v=bgtS7qoRnjEhttps://www.youtube.com/watch?v=9arsAqNZ8tU
-
     protocol_string = "https://"
     url_list = None
     error = False
@@ -24,10 +47,15 @@ def get_inserted_links():
             print("Error")
         else:
             for url in url_list:
-                print("https://" + url)
+                url = "https://" + url
+                link_match = check_youtube_link(url)
+                if link_match is not None:
+                    print(url, "OK")
+                    download_video(url)
+                else:
+                    print(url, "Incorrect link!")
 
 
-print("Kek")
 main_window = Tk()
 
 main_window.title("YouTube => MP3 Downloader")
